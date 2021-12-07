@@ -4,5 +4,5 @@
 #
 
 output "labels" {
-  value = data.external.labels.result
+  value = one(data.external.labels[*].result)
 }

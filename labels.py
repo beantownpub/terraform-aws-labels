@@ -1,5 +1,21 @@
 import json
+import os
 import sys
+from datetime import datetime
+import boto3
+
+def create_client(region):
+    session = boto3.Session(profile_name=os.environ.get('AWS_PROFILE'), region_name=region)
+    return session.client('ec2')
+
+
+def get_azs(region):
+    client = create_client(region)
+    zone_list = []
+    azs = client.describe_availability_zones()
+    for zone in azs['AvailabilityZones']:
+        zone_list.append(zone['ZoneName'])
+    return str(zone_list)
 
 
 REGION_CODES = {
@@ -26,10 +42,17 @@ REGION_CODES = {
     "us-west-2": "usw2"
 }
 
+def make_timestamp():
+    timestamp = datetime.now()
+    return timestamp.isoformat()
+
+
 def add_labels(label_dict):
     region = label_dict.get('region')
     region_code = REGION_CODES.get(region)
     label_dict['region_code'] = region_code
+    label_dict['date'] = make_timestamp()
+    label_dict['availability_zones'] = get_azs(region)
     return label_dict
 
 def parse_stdin(stdin):

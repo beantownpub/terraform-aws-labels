@@ -3,13 +3,12 @@
 # 2021
 #
 
-variable "attribute" {
-  default = ""
+variable "enabled" {
+  type        = bool
+  description = "Whether or not to create labels"
+  default     = true
 }
 variable "environment" {}
 variable "region" {
-  default = null
-}
-variable "resource" {
   default = null
 }
